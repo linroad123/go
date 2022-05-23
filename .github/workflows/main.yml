@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
   
 env:
-  ARTIFACT_NAME: cyclonedxnode_sbom
+  ARTIFACT_NAME: cyclonedxgo_sbom
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -31,13 +31,13 @@ jobs:
         uses: CycloneDX/gh-gomod-generate-sbom@v1
         with:
           version: v1
-          args: mod -licenses -json -output bom.json
+          args: mod -licenses -json -output gobom.json
           
       - name: Upload bom file
         uses: actions/upload-artifact@v1
         with:
           name: ${{ env.ARTIFACT_NAME }}
-          path: bom.json
+          path: gobom.json
           
 #       - name: Upload to server  
 #         uses: DependencyTrack/gh-upload-sbom@v1.0.0
