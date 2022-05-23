@@ -1,0 +1,49 @@
+name: SBOM
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  
+env:
+  ARTIFACT_NAME: cyclonedxnode_sbom
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  checkout-repo:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        
+      # Download and invoke cyclonedx-gomod in a single step
+      - name: Generate SBOM
+        uses: CycloneDX/gh-gomod-generate-sbom@v1
+        with:
+          version: v1
+          args: mod -licenses -json -output bom.json
+          
+      - name: Upload bom file
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: bom.json
+          
+#       - name: Upload to server  
+#         uses: DependencyTrack/gh-upload-sbom@v1.0.0
+#         with:
+#           serverhostname: 'xiao-lulu.duckdns.org'
+#           port: 8080
+#           apikey: ${{ secrets.APIKEY }}
+#           project: '1cba8488-2aa2-4a63-9736-72a97027a37b'
+#           bomfilename: cyclonedx.xml
